@@ -1,0 +1,9 @@
+A integração entre microsserviços com RestTemplate
+O RestTemplate do Spring permite chamadas HTTP de alto nível
+Um introdução ao Service discovery e Service registry
+Service registry é um servidor central, onde todos os microsserviços ficam cadastrados (nome e IP/porta)
+Service discovery é um mecanismo de descoberta do IP do microsserviço pelo nome
+Dessa forma, nenhum microsserviço fica acoplado ao outro pelo IP/porta
+A implementação do service registry através do Eureka Server
+Como registrar da Loja e do Fornecedor no Eureka Server
+A resolução do IP/porta através do nome do microsserviço nas requisições

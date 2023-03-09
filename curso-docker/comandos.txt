@@ -1,0 +1,56 @@
+docker build .   = Comando para gerar uma imagem do docker. É necessário ter um Dockerfile na raíz do diretório.
+
+docker build -t curso-docker = Comando para gerar uma imagem do docker já especificando o nome da imagem.
+
+
+docker image ls = lista todas as imagens que eu tenho instalados no meu docker
+
+
+docker run -d -p 3000:3000 0e872274c129 = esse comando está rodando o terminal no modo detach (modo que não ocupa o terminal) 
+e o -p é para exportas as portas. O primeiro 3000 é NO MEU NAVEGADOR e o segundo 3000 é o que está no Dockerfile
+
+é possível rodar vários containers da mesma imagem. Comando acima e trocando o número da porta exposta no navegaor. 
+
+
+docker tag 0e872274c129 curso-docker = Comando para renomear o nome da imagem. Passe o ID seguido pelo nome desejado.
+
+
+docker run -d -p 3000:3000 curso-docker = Comando citado anteriormente, porém já passando o nome da imagem
+
+Uma vez já utilizado o comando docker run, será gerado um ID para esse container que está executando determinada imagem.
+
+Quando quiser utilizar novamente esse comando, utilizar docker start em vez de docker run (para evitar repetições de container)
+
+docker rmi -f curso-docker   = Comando utilizando para remover uma imagem, -f para forçar caso ela esteja sendo executada em algum container.
+
+
+docker run -d -p 80:80 --name app_volume_container app_volume  = Comando para rodar container, já definindo a porta, o nome do container e por último
+referenciado a imagem desejada.
+
+
+docker run -d -p 80:80 --name app_volume_container -v /data app_volume  = Comando de cima porém utilizando volumes anônimos.
+
+docker run -d -p 80:80 --name app_container -v phpvolume:/var/www/html/messages --rm app_volume  = Comando para criar volumes nomeados.
+
+
+docker run -d -p 80:80 --name app_container -v "C:\Users\mathe\Desktop\curso Docker\app_volume\messages:/var/www/html/messages" --rm app_volume = Comando para executar o BIND MOUNT obs: aspas duplas quando o diretório tiver espaços
+
+docker run -d -p 80:80 --name app_container -v volume_test:/var/www/html/ --rm app_volume
+
+
+--- Criando volume manualmente --
+
+docker volume create volume_test 
+
+docker run -d -p 80:80 --name app_container -v volume_test:/var/www/html/ --rm app_volume   =  Comando para executar um container já selecionando
+um volume já criado anteriormente.
+
+-- Listando volumes --
+
+docker volume ls
+
+
+docker run --name postgres-container -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=123 -d -p 5431:5432 postgres
+docker exec -it e58 bash
+psql -U postgres
+CREATE DATABASE alurafoodpedido;

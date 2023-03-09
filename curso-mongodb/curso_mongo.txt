@@ -1,0 +1,186 @@
+Durante os nossos estudos, realizamos a criação e remoção de banco de dados e coleções utilizando o MongoDB Compass, como também a linha de comando através do MongoDB Shell.
+
+Para criar um banco de dados no MongoDB Shell, nós utilizamos a instrução:
+
+use  <db>
+Ao executar este comando, caso o banco de dados já exista, será apenas realizada a conexão, caso contrário, o banco de dados será criado. Mas, precisamos armazenar dados neste banco de dados pela primeira vez, para ele ser definitivamente criado. Então, precisamos criar nossa primeira coleção.
+
+O MongoDB disponibiliza alguns métodos para criarmos uma coleção. Para criar explicitamente uma coleção no MongoDB Shell, nós utilizamos o método:
+
+db.createCollection(“Nome_da_coleção”)
+Também podemos criar uma coleção no MongoDB, quando armazenamos dados nesta coleção pela primeira vez.
+
+Para excluir um banco de dados pela linha de comando, precisamos estar conectados ao banco de dados que será excluído e executar a instrução:
+
+db.dropDatabase()
+Já para excluir uma coleção pela linha de comando, executamos a instrução:
+
+db.Collection.drop()
+
+
+
+O MongoDB armazena registros de dados como documentos BSON, que é uma representação binária de documentos JSON.
+
+O valor de um campo em um documento pode ser qualquer um dos tipos de dados BSON, incluindo outros documentos, matrizes e matrizes de documentos, então vamos conhecer alguns desses tipos de dados?
+
+NULL: armazena valores nulos;
+
+Boolean: pode armazenar valores true ou falso;
+
+Number: número com sinal que pode ter uma notação com E exponencial;
+
+Inteiro: pode armazenar o tipo de dados inteiro em duas formas, inteiro assinado de 32 bits e inteiro assinado de 64 bits;
+
+String: uma sequência de um ou mais caracteres Unicode;
+
+Object: um array não ordenado com itens do tipo chave/valor, também conhecidos como documentos aninhados;
+
+Array: armazena uma lista ordenada de qualquer tipo, criada usando colchetes e com cada elemento separado por vírgulas;
+
+ObjectId: identificador único de um registro do MongoDB;
+
+Date(): retorna a data atual em formato de string; e
+
+New Date() e ISODate(): retornam um objeto de data.
+
+Esses são apenas alguns tipos de dados que podemos trabalhar no MongoDB, a título de complemento, você pode acessar também a documentação do MongoDB sobre BSON types.
+
+
+{
+  "Série": "Pataal Lok",
+  "Ano de lançamento": 2020,
+  "Temporadas disponíveis": 1,
+  "Linguagem": "Hindi",
+  "Gênero": [
+    "Drama"
+  ],
+  "IMDb Avaliação": 7.5,
+  "Classificação": "18+"
+}
+
+INSERT LINHA DE COMANDO
+
+db.series.insertOne({
+"Série": "Fleabag",
+        "Ano de lançamento": 2016,
+        "Temporadas disponíveis": 2,
+        "Linguagem": "Inglês",
+        "IMDb Avaliação": 8.7})
+
+
+INSERIR MAIS DE UM REGISTRO POR COMANDO
+
+
+db.series.insertMany([
+{        "Série": "Made in Heaven",
+        "Temporadas disponíveis": 1,
+        "Linguagem": "Hindi",
+        "Genero": ["Drama"],
+        "IMDb Avaliação": 8.3,
+        "Classificação": "18+"
+    },{
+        "Série": "Homecoming",
+        "Temporadas disponíveis": 2,
+        "Linguagem": "Inglês",
+        "Genero": ["Drama"],
+        "IMDb Avaliação": 7.5,
+        "Classificação": "16+"
+    }])
+
+
+Comando para filtrar apenas séries com lançamento em 2020
+{"Ano de lançamento": 2020}
+
+
+Comando project: Comando para informar os campos que serão retornados, no caso abaixo, série e classificação!
+{"Série": 1, "Classificação": 1}
+
+OBS: Campo ID sempre retornado!
+
+Comando sort: Opção para fazer o order by do documento. Sendo 1 valor ascendente e -1 valor decrescente!
+
+
+
+
+DOCUMENTAÇÃO CURSO:
+
+FILTER: utilizado para especificar qual será a condição que os documentos devem atender para serem retornados na busca.
+
+PROJECT: utilizado para especificar quais campos serão ou não retornados na consulta.
+
+Ao Informar o nome do campo e informar 0, todos os campos, exceto os campos especificados no campo project, são retornados. Se o campo receber o valor de 1, ele será retornado na consulta. O campo _id é retornado por padrão, a menos que este seja especificado no campo project e definido como 0.
+SORT: especifica a ordem de classificação dos documentos retornados.
+
+Para especificar a ordem crescente de um campo, defina o campo como 1.
+Para especificar a ordem decrescente de um campo, defina o campo como -1.
+MAX TIME MS: define o limite de tempo cumulativo em milissegundos para processar as operações da barra de consulta. Se o limite de tempo for atingido antes da conclusão da operação, o Compass interrompe a operação.
+
+COLLATION: utilizado para especificar regras específicas do idioma para comparação de textos, como regras para letras maiúsculas ou minúsculas, acentos, entre outros.
+
+SKIP: especifica quantos documentos devem ser ignorados antes de retornar o conjunto de resultados.
+
+LIMIT: especifica o número máximo de documentos a serem retornados.
+
+Comando abaixo para filtrar o ano de lançamento igual a 2018 OU então, classificação 18+
+{$or: [{"Ano de lançamento": 2018}, {"Classificação": "18+"}]}
+
+Comando abaixo para filtrar o ano de lançamento igual a 2018 E classificação 18+
+{$or: [{"Ano de lançamento": 2018}, {"Classificação": "18+"}]}
+
+Comando abaixo para filtrar ano de lançamento que seja 2019 ou 2020
+{"Ano de lançamento": {$in: [2019, 2020]}}
+
+Comando abaixo para filtrar temporadas disponíveis maior que 2 (duas)
+{"Temporadas disponíveis": {$gte:2}}
+
+Comando abaixo para filtrar temporadas disponíveis maior ou igual a 2 (duas)
+{"Temporadas disponíveis": {$gte:2}}
+
+Comando abaixo para filtrar temporadas disponíveis menor que 5
+{"Temporadas disponíveis": {$lt:5}}
+
+Comando abaixo para filtrar temporadas disponíveis menor ou igual a 5
+{"Temporadas disponíveis": {$lte:5}}
+
+
+Comando para buscar todos pelo terminal (sh)
+db.series.find()
+
+Comando para filtrar por ano de lançamento 2018
+db.series.find({"Ano de lançamento": 2018})
+
+Comando para buscar todos, trazendo apenas campo série, ano de lançamento e OCULTANDO ID
+db.series.find({},{"Série":1, "Ano de lançamento": 1, "_id":0})
+
+Comando para trazer lançamentos que seja 2019 ou 2020
+db.series.find({"Ano de lançamento": {$in: [2019,2020]}})
+
+Comando que traz tudo e limita em 5 resultados
+db.series.find().limit(5)
+
+Comando que busca todos, ordenando pela série
+
+Comando que busca temporadas disponíveis maior ou igual a 4
+db.series.find({"Temporadas disponíveis": {$gte: 4}})
+
+db.series.find().sort({"Série":1})
+
+Comando que busca ano de lançamento que seja diferente de 2020
+db.series.find({"Ano de lançamento": {$ne: 2020}})
+
+Comando que filtra gênero do tipo seja ação e comédia
+db.series.find({"Genero": {$all:["Ação", "Comédia"]}})
+
+Comando que seleciona o registro que tenha série Grimm como valor, e seta um novo valor para a temporada disponível
+db.series.updateOne({"Série": "Grimm"},{$set: {"Temporadas disponíveis": 6}})`
+
+Griim não possue classificação, ao realizar esse comando, setamos um valor pra ele
+db.series.updateOne({"Série": "Grimm"},{$set: {"Classificação": "16+"}})
+
+Comando para remover o ducumento com o campo série valor the boys
+db.series.deleteOne({"Série": "The Boys"})
+
+Comando para remover documentos com temporadas disponíveis igual a 1
+db.series.deleteMany({"Temporadas disponíveis": 1})
+
+

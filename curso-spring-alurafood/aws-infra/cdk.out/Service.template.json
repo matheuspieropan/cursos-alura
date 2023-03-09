@@ -1,0 +1,644 @@
+{
+ "Resources": {
+  "pieropanserviceLBD392334F": {
+   "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
+   "Properties": {
+    "LoadBalancerAttributes": [
+     {
+      "Key": "deletion_protection.enabled",
+      "Value": "false"
+     }
+    ],
+    "Scheme": "internet-facing",
+    "SecurityGroups": [
+     {
+      "Fn::GetAtt": [
+       "pieropanserviceLBSecurityGroup412F1849",
+       "GroupId"
+      ]
+     }
+    ],
+    "Subnets": [
+     {
+      "Fn::ImportValue": "vpc:ExportsOutputRefmatheusvpcPublicSubnet1SubnetBC0A9B4AF2EEB1F5"
+     },
+     {
+      "Fn::ImportValue": "vpc:ExportsOutputRefmatheusvpcPublicSubnet2SubnetA691152563A5BA15"
+     }
+    ],
+    "Type": "application"
+   },
+   "Metadata": {
+    "aws:cdk:path": "Service/pieropan-service/LB/Resource"
+   }
+  },
+  "pieropanserviceLBSecurityGroup412F1849": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "Automatically created Security Group for ELB ServicepieropanserviceLB930C9FCA",
+    "SecurityGroupIngress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow from anyone on port 8080",
+      "FromPort": 8080,
+      "IpProtocol": "tcp",
+      "ToPort": 8080
+     }
+    ],
+    "VpcId": {
+     "Fn::ImportValue": "vpc:ExportsOutputRefmatheusvpcA21D3F1E299FDF8B"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "Service/pieropan-service/LB/SecurityGroup/Resource"
+   }
+  },
+  "pieropanserviceLBSecurityGrouptoServicepieropanserviceServiceSecurityGroup81E4BFDD80804673B4E8": {
+   "Type": "AWS::EC2::SecurityGroupEgress",
+   "Properties": {
+    "GroupId": {
+     "Fn::GetAtt": [
+      "pieropanserviceLBSecurityGroup412F1849",
+      "GroupId"
+     ]
+    },
+    "IpProtocol": "tcp",
+    "Description": "Load balancer to target",
+    "DestinationSecurityGroupId": {
+     "Fn::GetAtt": [
+      "pieropanserviceServiceSecurityGroup2D5956ED",
+      "GroupId"
+     ]
+    },
+    "FromPort": 8080,
+    "ToPort": 8080
+   },
+   "Metadata": {
+    "aws:cdk:path": "Service/pieropan-service/LB/SecurityGroup/to ServicepieropanserviceServiceSecurityGroup81E4BFDD:8080"
+   }
+  },
+  "pieropanserviceLBPublicListener86AB5A49": {
+   "Type": "AWS::ElasticLoadBalancingV2::Listener",
+   "Properties": {
+    "DefaultActions": [
+     {
+      "TargetGroupArn": {
+       "Ref": "pieropanserviceLBPublicListenerECSGroup565C7B3C"
+      },
+      "Type": "forward"
+     }
+    ],
+    "LoadBalancerArn": {
+     "Ref": "pieropanserviceLBD392334F"
+    },
+    "Port": 8080,
+    "Protocol": "HTTP"
+   },
+   "Metadata": {
+    "aws:cdk:path": "Service/pieropan-service/LB/PublicListener/Resource"
+   }
+  },
+  "pieropanserviceLBPublicListenerECSGroup565C7B3C": {
+   "Type": "AWS::ElasticLoadBalancingV2::TargetGroup",
+   "Properties": {
+    "Port": 80,
+    "Protocol": "HTTP",
+    "TargetGroupAttributes": [
+     {
+      "Key": "stickiness.enabled",
+      "Value": "false"
+     }
+    ],
+    "TargetType": "ip",
+    "VpcId": {
+     "Fn::ImportValue": "vpc:ExportsOutputRefmatheusvpcA21D3F1E299FDF8B"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "Service/pieropan-service/LB/PublicListener/ECSGroup/Resource"
+   }
+  },
+  "pieropanserviceTaskDefTaskRole2189C627": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "ecs-tasks.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "Service/pieropan-service/TaskDef/TaskRole/Resource"
+   }
+  },
+  "pieropanserviceTaskDef6B00BB3B": {
+   "Type": "AWS::ECS::TaskDefinition",
+   "Properties": {
+    "ContainerDefinitions": [
+     {
+      "Environment": [
+       {
+        "Name": "SPRING_DATASOURCE_URL",
+        "Value": {
+         "Fn::Join": [
+          "",
+          [
+           "jdbc:postgresql://",
+           {
+            "Fn::ImportValue": "pedidos-db-endpoint"
+           },
+           ":5432/alurafoodpedido"
+          ]
+         ]
+        }
+       },
+       {
+        "Name": "SPRING_DATASOURCE_PASSWORD",
+        "Value": {
+         "Fn::ImportValue": "pedidos-db-senha"
+        }
+       },
+       {
+        "Name": "SPRING_DATASOURCE_USERNAME",
+        "Value": "postgres"
+       }
+      ],
+      "Essential": true,
+      "Image": "jacquelineoliveira/ola:1.0",
+      "LogConfiguration": {
+       "LogDriver": "awslogs",
+       "Options": {
+        "awslogs-group": {
+         "Ref": "pieropanserviceTaskDefappolaLogGroupF40FD6D0"
+        },
+        "awslogs-stream-prefix": "pieropan-service",
+        "awslogs-region": {
+         "Ref": "AWS::Region"
+        }
+       }
+      },
+      "Name": "app_ola",
+      "PortMappings": [
+       {
+        "ContainerPort": 8080,
+        "Protocol": "tcp"
+       }
+      ]
+     }
+    ],
+    "Cpu": "256",
+    "ExecutionRoleArn": {
+     "Fn::GetAtt": [
+      "pieropanserviceTaskDefExecutionRole2F6B55A4",
+      "Arn"
+     ]
+    },
+    "Family": "ServicepieropanserviceTaskDef78F494F5",
+    "Memory": "1024",
+    "NetworkMode": "awsvpc",
+    "RequiresCompatibilities": [
+     "FARGATE"
+    ],
+    "TaskRoleArn": {
+     "Fn::GetAtt": [
+      "pieropanserviceTaskDefTaskRole2189C627",
+      "Arn"
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "Service/pieropan-service/TaskDef/Resource"
+   }
+  },
+  "pieropanserviceTaskDefappolaLogGroupF40FD6D0": {
+   "Type": "AWS::Logs::LogGroup",
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain",
+   "Metadata": {
+    "aws:cdk:path": "Service/pieropan-service/TaskDef/app_ola/LogGroup/Resource"
+   }
+  },
+  "pieropanserviceTaskDefExecutionRole2F6B55A4": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "ecs-tasks.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "Service/pieropan-service/TaskDef/ExecutionRole/Resource"
+   }
+  },
+  "pieropanserviceTaskDefExecutionRoleDefaultPolicy051817F1": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "logs:CreateLogStream",
+        "logs:PutLogEvents"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "pieropanserviceTaskDefappolaLogGroupF40FD6D0",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "pieropanserviceTaskDefExecutionRoleDefaultPolicy051817F1",
+    "Roles": [
+     {
+      "Ref": "pieropanserviceTaskDefExecutionRole2F6B55A4"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "Service/pieropan-service/TaskDef/ExecutionRole/DefaultPolicy/Resource"
+   }
+  },
+  "pieropanserviceService74174C7A": {
+   "Type": "AWS::ECS::Service",
+   "Properties": {
+    "Cluster": {
+     "Fn::ImportValue": "Cluster:ExportsOutputRefpieropancluster77C7FAAD04E0E0C0"
+    },
+    "DeploymentConfiguration": {
+     "MaximumPercent": 200,
+     "MinimumHealthyPercent": 50
+    },
+    "DesiredCount": 1,
+    "EnableECSManagedTags": false,
+    "HealthCheckGracePeriodSeconds": 60,
+    "LaunchType": "FARGATE",
+    "LoadBalancers": [
+     {
+      "ContainerName": "app_ola",
+      "ContainerPort": 8080,
+      "TargetGroupArn": {
+       "Ref": "pieropanserviceLBPublicListenerECSGroup565C7B3C"
+      }
+     }
+    ],
+    "NetworkConfiguration": {
+     "AwsvpcConfiguration": {
+      "AssignPublicIp": "ENABLED",
+      "SecurityGroups": [
+       {
+        "Fn::GetAtt": [
+         "pieropanserviceServiceSecurityGroup2D5956ED",
+         "GroupId"
+        ]
+       }
+      ],
+      "Subnets": [
+       {
+        "Fn::ImportValue": "vpc:ExportsOutputRefmatheusvpcPublicSubnet1SubnetBC0A9B4AF2EEB1F5"
+       },
+       {
+        "Fn::ImportValue": "vpc:ExportsOutputRefmatheusvpcPublicSubnet2SubnetA691152563A5BA15"
+       }
+      ]
+     }
+    },
+    "TaskDefinition": {
+     "Ref": "pieropanserviceTaskDef6B00BB3B"
+    }
+   },
+   "DependsOn": [
+    "pieropanserviceLBPublicListenerECSGroup565C7B3C",
+    "pieropanserviceLBPublicListener86AB5A49"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "Service/pieropan-service/Service/Service"
+   }
+  },
+  "pieropanserviceServiceSecurityGroup2D5956ED": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "Service/pieropan-service/Service/SecurityGroup",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "VpcId": {
+     "Fn::ImportValue": "vpc:ExportsOutputRefmatheusvpcA21D3F1E299FDF8B"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "Service/pieropan-service/Service/SecurityGroup/Resource"
+   }
+  },
+  "pieropanserviceServiceSecurityGroupfromServicepieropanserviceLBSecurityGroup4FA31CBA8080E08EE443": {
+   "Type": "AWS::EC2::SecurityGroupIngress",
+   "Properties": {
+    "IpProtocol": "tcp",
+    "Description": "Load balancer to target",
+    "FromPort": 8080,
+    "GroupId": {
+     "Fn::GetAtt": [
+      "pieropanserviceServiceSecurityGroup2D5956ED",
+      "GroupId"
+     ]
+    },
+    "SourceSecurityGroupId": {
+     "Fn::GetAtt": [
+      "pieropanserviceLBSecurityGroup412F1849",
+      "GroupId"
+     ]
+    },
+    "ToPort": 8080
+   },
+   "Metadata": {
+    "aws:cdk:path": "Service/pieropan-service/Service/SecurityGroup/from ServicepieropanserviceLBSecurityGroup4FA31CBA:8080"
+   }
+  },
+  "CDKMetadata": {
+   "Type": "AWS::CDK::Metadata",
+   "Properties": {
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/31Qy27CMBD8Fu6OSzmk577VCqlVwh0tzhJtY+zIXlOhKP9exwEU2oqTZ8bjnVkvZJ7L+Qy+faaqJtO0kV3JoBoRpXWHyq9bYEZnvLxvW00KmKxZWqgeQINRWL2Aq4GxRLcnhQI1eCalo2OTHGTq/UJ2/7924nF7yac+8ozm6Dnhyf0qJiO/OhvawTKhvUAVM0tUwREfzpbrwnPt0Ps/8ptJ+jDTy+647gp884RbMjQ0GeMvFWsYKDaeaL++KgUl2AuCnewKq5Oazk8b9zwMdES90LaOBZa2Ptc/4b4f2EfgNrAo0NvgxvlTHBtVqUcv3mEPN7d3ci7z2ZcnylwwTDuUxXj+AI6n5dAXAgAA"
+   },
+   "Metadata": {
+    "aws:cdk:path": "Service/CDKMetadata/Default"
+   },
+   "Condition": "CDKMetadataAvailable"
+  }
+ },
+ "Outputs": {
+  "pieropanserviceLoadBalancerDNS092A3D79": {
+   "Value": {
+    "Fn::GetAtt": [
+     "pieropanserviceLBD392334F",
+     "DNSName"
+    ]
+   }
+  },
+  "pieropanserviceServiceURL60BCD3F3": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "http://",
+      {
+       "Fn::GetAtt": [
+        "pieropanserviceLBD392334F",
+        "DNSName"
+       ]
+      }
+     ]
+    ]
+   }
+  }
+ },
+ "Conditions": {
+  "CDKMetadataAvailable": {
+   "Fn::Or": [
+    {
+     "Fn::Or": [
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "af-south-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-east-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-northeast-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-northeast-2"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-south-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-southeast-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-southeast-2"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ca-central-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "cn-north-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "cn-northwest-1"
+       ]
+      }
+     ]
+    },
+    {
+     "Fn::Or": [
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-central-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-north-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-south-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-west-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-west-2"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-west-3"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "me-south-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "sa-east-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "us-east-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "us-east-2"
+       ]
+      }
+     ]
+    },
+    {
+     "Fn::Or": [
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "us-west-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "us-west-2"
+       ]
+      }
+     ]
+    }
+   ]
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

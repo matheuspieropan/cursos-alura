@@ -1,0 +1,755 @@
+{
+ "Resources": {
+  "matheusvpcA21D3F1E": {
+   "Type": "AWS::EC2::VPC",
+   "Properties": {
+    "CidrBlock": "10.0.0.0/16",
+    "EnableDnsHostnames": true,
+    "EnableDnsSupport": true,
+    "InstanceTenancy": "default",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "vpc/matheus-vpc"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "vpc/matheus-vpc/Resource"
+   }
+  },
+  "matheusvpcPublicSubnet1SubnetBC0A9B4A": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "VpcId": {
+     "Ref": "matheusvpcA21D3F1E"
+    },
+    "AvailabilityZone": {
+     "Fn::Select": [
+      0,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.0.0/18",
+    "MapPublicIpOnLaunch": true,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Public"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Public"
+     },
+     {
+      "Key": "Name",
+      "Value": "vpc/matheus-vpc/PublicSubnet1"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "vpc/matheus-vpc/PublicSubnet1/Subnet"
+   }
+  },
+  "matheusvpcPublicSubnet1RouteTable658CB081": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "VpcId": {
+     "Ref": "matheusvpcA21D3F1E"
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "vpc/matheus-vpc/PublicSubnet1"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "vpc/matheus-vpc/PublicSubnet1/RouteTable"
+   }
+  },
+  "matheusvpcPublicSubnet1RouteTableAssociationB3D71442": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "matheusvpcPublicSubnet1RouteTable658CB081"
+    },
+    "SubnetId": {
+     "Ref": "matheusvpcPublicSubnet1SubnetBC0A9B4A"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "vpc/matheus-vpc/PublicSubnet1/RouteTableAssociation"
+   }
+  },
+  "matheusvpcPublicSubnet1DefaultRouteCFFB5905": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "matheusvpcPublicSubnet1RouteTable658CB081"
+    },
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "GatewayId": {
+     "Ref": "matheusvpcIGW418DAF22"
+    }
+   },
+   "DependsOn": [
+    "matheusvpcVPCGW18692B3E"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "vpc/matheus-vpc/PublicSubnet1/DefaultRoute"
+   }
+  },
+  "matheusvpcPublicSubnet1EIP2CE66BB9": {
+   "Type": "AWS::EC2::EIP",
+   "Properties": {
+    "Domain": "vpc",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "vpc/matheus-vpc/PublicSubnet1"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "vpc/matheus-vpc/PublicSubnet1/EIP"
+   }
+  },
+  "matheusvpcPublicSubnet1NATGatewayE5F27D73": {
+   "Type": "AWS::EC2::NatGateway",
+   "Properties": {
+    "SubnetId": {
+     "Ref": "matheusvpcPublicSubnet1SubnetBC0A9B4A"
+    },
+    "AllocationId": {
+     "Fn::GetAtt": [
+      "matheusvpcPublicSubnet1EIP2CE66BB9",
+      "AllocationId"
+     ]
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "vpc/matheus-vpc/PublicSubnet1"
+     }
+    ]
+   },
+   "DependsOn": [
+    "matheusvpcPublicSubnet1DefaultRouteCFFB5905",
+    "matheusvpcPublicSubnet1RouteTableAssociationB3D71442"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "vpc/matheus-vpc/PublicSubnet1/NATGateway"
+   }
+  },
+  "matheusvpcPublicSubnet2SubnetA6911525": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "VpcId": {
+     "Ref": "matheusvpcA21D3F1E"
+    },
+    "AvailabilityZone": {
+     "Fn::Select": [
+      1,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.64.0/18",
+    "MapPublicIpOnLaunch": true,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Public"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Public"
+     },
+     {
+      "Key": "Name",
+      "Value": "vpc/matheus-vpc/PublicSubnet2"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "vpc/matheus-vpc/PublicSubnet2/Subnet"
+   }
+  },
+  "matheusvpcPublicSubnet2RouteTable9F278B5A": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "VpcId": {
+     "Ref": "matheusvpcA21D3F1E"
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "vpc/matheus-vpc/PublicSubnet2"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "vpc/matheus-vpc/PublicSubnet2/RouteTable"
+   }
+  },
+  "matheusvpcPublicSubnet2RouteTableAssociation4CA58B72": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "matheusvpcPublicSubnet2RouteTable9F278B5A"
+    },
+    "SubnetId": {
+     "Ref": "matheusvpcPublicSubnet2SubnetA6911525"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "vpc/matheus-vpc/PublicSubnet2/RouteTableAssociation"
+   }
+  },
+  "matheusvpcPublicSubnet2DefaultRoute8265E11A": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "matheusvpcPublicSubnet2RouteTable9F278B5A"
+    },
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "GatewayId": {
+     "Ref": "matheusvpcIGW418DAF22"
+    }
+   },
+   "DependsOn": [
+    "matheusvpcVPCGW18692B3E"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "vpc/matheus-vpc/PublicSubnet2/DefaultRoute"
+   }
+  },
+  "matheusvpcPublicSubnet2EIPB6107FAA": {
+   "Type": "AWS::EC2::EIP",
+   "Properties": {
+    "Domain": "vpc",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "vpc/matheus-vpc/PublicSubnet2"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "vpc/matheus-vpc/PublicSubnet2/EIP"
+   }
+  },
+  "matheusvpcPublicSubnet2NATGateway9C573450": {
+   "Type": "AWS::EC2::NatGateway",
+   "Properties": {
+    "SubnetId": {
+     "Ref": "matheusvpcPublicSubnet2SubnetA6911525"
+    },
+    "AllocationId": {
+     "Fn::GetAtt": [
+      "matheusvpcPublicSubnet2EIPB6107FAA",
+      "AllocationId"
+     ]
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "vpc/matheus-vpc/PublicSubnet2"
+     }
+    ]
+   },
+   "DependsOn": [
+    "matheusvpcPublicSubnet2DefaultRoute8265E11A",
+    "matheusvpcPublicSubnet2RouteTableAssociation4CA58B72"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "vpc/matheus-vpc/PublicSubnet2/NATGateway"
+   }
+  },
+  "matheusvpcPrivateSubnet1SubnetB8BCD07F": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "VpcId": {
+     "Ref": "matheusvpcA21D3F1E"
+    },
+    "AvailabilityZone": {
+     "Fn::Select": [
+      0,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.128.0/18",
+    "MapPublicIpOnLaunch": false,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Private"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Private"
+     },
+     {
+      "Key": "Name",
+      "Value": "vpc/matheus-vpc/PrivateSubnet1"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "vpc/matheus-vpc/PrivateSubnet1/Subnet"
+   }
+  },
+  "matheusvpcPrivateSubnet1RouteTable545C2404": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "VpcId": {
+     "Ref": "matheusvpcA21D3F1E"
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "vpc/matheus-vpc/PrivateSubnet1"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "vpc/matheus-vpc/PrivateSubnet1/RouteTable"
+   }
+  },
+  "matheusvpcPrivateSubnet1RouteTableAssociation996A1FF6": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "matheusvpcPrivateSubnet1RouteTable545C2404"
+    },
+    "SubnetId": {
+     "Ref": "matheusvpcPrivateSubnet1SubnetB8BCD07F"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "vpc/matheus-vpc/PrivateSubnet1/RouteTableAssociation"
+   }
+  },
+  "matheusvpcPrivateSubnet1DefaultRoute91DDB9C0": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "matheusvpcPrivateSubnet1RouteTable545C2404"
+    },
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "NatGatewayId": {
+     "Ref": "matheusvpcPublicSubnet1NATGatewayE5F27D73"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "vpc/matheus-vpc/PrivateSubnet1/DefaultRoute"
+   }
+  },
+  "matheusvpcPrivateSubnet2Subnet5E7E5C5D": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "VpcId": {
+     "Ref": "matheusvpcA21D3F1E"
+    },
+    "AvailabilityZone": {
+     "Fn::Select": [
+      1,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.192.0/18",
+    "MapPublicIpOnLaunch": false,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Private"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Private"
+     },
+     {
+      "Key": "Name",
+      "Value": "vpc/matheus-vpc/PrivateSubnet2"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "vpc/matheus-vpc/PrivateSubnet2/Subnet"
+   }
+  },
+  "matheusvpcPrivateSubnet2RouteTableF8A4394D": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "VpcId": {
+     "Ref": "matheusvpcA21D3F1E"
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "vpc/matheus-vpc/PrivateSubnet2"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "vpc/matheus-vpc/PrivateSubnet2/RouteTable"
+   }
+  },
+  "matheusvpcPrivateSubnet2RouteTableAssociation427FE3BC": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "matheusvpcPrivateSubnet2RouteTableF8A4394D"
+    },
+    "SubnetId": {
+     "Ref": "matheusvpcPrivateSubnet2Subnet5E7E5C5D"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "vpc/matheus-vpc/PrivateSubnet2/RouteTableAssociation"
+   }
+  },
+  "matheusvpcPrivateSubnet2DefaultRouteAD29B3B3": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "matheusvpcPrivateSubnet2RouteTableF8A4394D"
+    },
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "NatGatewayId": {
+     "Ref": "matheusvpcPublicSubnet2NATGateway9C573450"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "vpc/matheus-vpc/PrivateSubnet2/DefaultRoute"
+   }
+  },
+  "matheusvpcIGW418DAF22": {
+   "Type": "AWS::EC2::InternetGateway",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "vpc/matheus-vpc"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "vpc/matheus-vpc/IGW"
+   }
+  },
+  "matheusvpcVPCGW18692B3E": {
+   "Type": "AWS::EC2::VPCGatewayAttachment",
+   "Properties": {
+    "VpcId": {
+     "Ref": "matheusvpcA21D3F1E"
+    },
+    "InternetGatewayId": {
+     "Ref": "matheusvpcIGW418DAF22"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "vpc/matheus-vpc/VPCGW"
+   }
+  },
+  "CDKMetadata": {
+   "Type": "AWS::CDK::Metadata",
+   "Properties": {
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/02OzQ6CMBCEn8V7qT8HPBNijB4MAcPVLHWNK9iadgsxxncXRK2n+XYymZ2FjGM5m0DnInWso4Yq+SgYVC1664BqIR/lTYn0pMssFZmvGlKFrzTy4AXKjWfcQ9Vg8IOXOGcUAZPRv/AAq002yA54DYwd3EVmqe0xFG80o+35GxiXfK6E+6nnK2p+ihyd8Va9e/85NfpIw+en2EIL0/lSzmQ8uTiiyHrNdEWZj/oCIDGy2A0BAAA="
+   },
+   "Metadata": {
+    "aws:cdk:path": "vpc/CDKMetadata/Default"
+   },
+   "Condition": "CDKMetadataAvailable"
+  }
+ },
+ "Conditions": {
+  "CDKMetadataAvailable": {
+   "Fn::Or": [
+    {
+     "Fn::Or": [
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "af-south-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-east-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-northeast-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-northeast-2"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-south-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-southeast-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-southeast-2"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ca-central-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "cn-north-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "cn-northwest-1"
+       ]
+      }
+     ]
+    },
+    {
+     "Fn::Or": [
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-central-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-north-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-south-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-west-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-west-2"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-west-3"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "me-south-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "sa-east-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "us-east-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "us-east-2"
+       ]
+      }
+     ]
+    },
+    {
+     "Fn::Or": [
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "us-west-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "us-west-2"
+       ]
+      }
+     ]
+    }
+   ]
+  }
+ },
+ "Outputs": {
+  "ExportsOutputFnGetAttmatheusvpcA21D3F1EDefaultSecurityGroupCD4E7F2D": {
+   "Value": {
+    "Fn::GetAtt": [
+     "matheusvpcA21D3F1E",
+     "DefaultSecurityGroup"
+    ]
+   },
+   "Export": {
+    "Name": "vpc:ExportsOutputFnGetAttmatheusvpcA21D3F1EDefaultSecurityGroupCD4E7F2D"
+   }
+  },
+  "ExportsOutputRefmatheusvpcPrivateSubnet1SubnetB8BCD07F38099B4B": {
+   "Value": {
+    "Ref": "matheusvpcPrivateSubnet1SubnetB8BCD07F"
+   },
+   "Export": {
+    "Name": "vpc:ExportsOutputRefmatheusvpcPrivateSubnet1SubnetB8BCD07F38099B4B"
+   }
+  },
+  "ExportsOutputRefmatheusvpcPrivateSubnet2Subnet5E7E5C5D892E2588": {
+   "Value": {
+    "Ref": "matheusvpcPrivateSubnet2Subnet5E7E5C5D"
+   },
+   "Export": {
+    "Name": "vpc:ExportsOutputRefmatheusvpcPrivateSubnet2Subnet5E7E5C5D892E2588"
+   }
+  },
+  "ExportsOutputRefmatheusvpcPublicSubnet1SubnetBC0A9B4AF2EEB1F5": {
+   "Value": {
+    "Ref": "matheusvpcPublicSubnet1SubnetBC0A9B4A"
+   },
+   "Export": {
+    "Name": "vpc:ExportsOutputRefmatheusvpcPublicSubnet1SubnetBC0A9B4AF2EEB1F5"
+   }
+  },
+  "ExportsOutputRefmatheusvpcPublicSubnet2SubnetA691152563A5BA15": {
+   "Value": {
+    "Ref": "matheusvpcPublicSubnet2SubnetA6911525"
+   },
+   "Export": {
+    "Name": "vpc:ExportsOutputRefmatheusvpcPublicSubnet2SubnetA691152563A5BA15"
+   }
+  },
+  "ExportsOutputRefmatheusvpcA21D3F1E299FDF8B": {
+   "Value": {
+    "Ref": "matheusvpcA21D3F1E"
+   },
+   "Export": {
+    "Name": "vpc:ExportsOutputRefmatheusvpcA21D3F1E299FDF8B"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

@@ -1,0 +1,15 @@
+Suponha que eu tenha uma aplicação produtora, chamada pedido. E em um determinado momento seja necessário mandar mensagem para apenas dois consumidores: o estoque, para confirmar se tem os itens do pedido, e para o financeiro, para ver se o cliente desse pedido tem alguma pendência.
+
+Num segundo momento, eu vou querer enviar uma mensagem para esses dois consumidores e mais um terceiro, que é o pagamento. Para isso, configurei as minhas binding keys da seguinte forma:
+
+As binding keys da fila-estoque e da fila-financeiro com a exchange, configurei como pedido.*
+
+Já a binding key da fila-pagamento com a exchange, configurei como *.pagamento
+
+Caso o pedido envie uma mensagem com a routing key pedido.criado, por exemplo, tanto o estoque quanto o financeiro receberão a mensagem, pois a routing key se enquadra no padrão que foi definido na binding key.
+
+Caso o pedido envie uma mensagem com a routing key pedido.pagamento, os três consumidores receberão a mensagem, pois o roteamento atende aos dois padrões.
+
+Dessa forma, é possível compor e estabelecer padrões para definir envios com rotas diferenciadas, baseado em alguma situação específica que somente uns ou outros consumidores precisem receber as mensagens.
+
+Para melhor aproveitamento e performance no uso do RabbitMQ, é importante entender e modelar corretamente os tipos de exchanges para que se possa garantir uma comunicação eficiente entre os produtores e consumidores.

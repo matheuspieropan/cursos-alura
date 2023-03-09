@@ -1,0 +1,65 @@
+cd /vagrant/jenkins-todo-list/
+ 
+vagrant plugin install vagrant-disksize
+ps -ef | grep -i mysql
+
+ssh-keygen -t rsa -b 4096 -C "matheus.pieropan@viannasempre.com.br"
+
+git config --global user.name "pieropan96-dev"
+git config --global user.email "matheus.pieropan@viannasempre.com.br"
+
+sudo usermod -aG docker $USER
+sudo usermod -aG docker jenkins
+
+[config]
+
+# Secret configuration
+
+SECRET_KEY = 'r*5ltfzw-61ksdm41fuul8+hxs$86yo9%k1%k=(!@=-wv4qtyv'
+
+# conf 
+DEBUG=True
+
+ # Database 
+DB_NAME = "todo"
+DB_USER = "devops"
+DB_PASSWORD = "mestre"
+DB_HOST = "localhost"
+DB_PORT = "3306"
+		
+					
+sudo python3 manage.py makemigrations
+sudo python3 manage.py migrate
+
+sudo python3 manage.py createsuperuser
+sudo python3 manage.py runserver 0:8000
+
+
+[config]
+# Secret configuration
+SECRET_KEY = 'r*5ltfzw-61ksdm41fuul8+hxs$86yo9%k1%k=(!@=-wv4qtyv'
+
+# conf
+DEBUG=True
+
+# Database
+DB_NAME = "todo"
+DB_USER = "devops"
+DB_PASSWORD = "mestre"
+DB_HOST = "localhost"
+DB_PORT = "3306"
+
+
+[Service]
+ExecStart=
+ExecStart=/usr/bin/dockerd -H fd:// -H tcp://0.0.0.0:2376
+
+
+jenkins-todolist
+
+
+./sonar-scanner-3.3.0.1492-linux/bin/sonar-scanner   -X \
+  -Dsonar.projectKey=jenkins-todolist \
+  -Dsonar.sources=. \
+  -Dsonar.host.url=http://192.168.33.10:9000 \
+  -Dsonar.login=852e578b3178d9951b7302a40cdffd21d4f347ee
