@@ -1,6 +1,7 @@
 package com.pieropan.loja.controller;
 
 import com.pieropan.loja.dto.CompraDTO;
+import com.pieropan.loja.model.Compra;
 import com.pieropan.loja.service.CompraService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +18,7 @@ public class CompraController {
     CompraService compraService;
 
     @PostMapping
-    public void realizaCompra(@RequestBody CompraDTO compra) {
-        compraService.realizaCompra(compra);
+    public Compra realizaCompra(@RequestBody CompraDTO compra) {
+        return compraService.realizaCompra(compra);
     }
 }
