@@ -125,7 +125,7 @@ Comando abaixo para filtrar o ano de lançamento igual a 2018 OU então, classif
 {$or: [{"Ano de lançamento": 2018}, {"Classificação": "18+"}]}
 
 Comando abaixo para filtrar o ano de lançamento igual a 2018 E classificação 18+
-{$or: [{"Ano de lançamento": 2018}, {"Classificação": "18+"}]}
+{$and: [{"Ano de lançamento": 2018}, {"Classificação": "18+"}]}
 
 Comando abaixo para filtrar ano de lançamento que seja 2019 ou 2020
 {"Ano de lançamento": {$in: [2019, 2020]}}
