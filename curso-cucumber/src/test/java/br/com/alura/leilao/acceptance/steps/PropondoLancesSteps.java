@@ -53,6 +53,16 @@ public class PropondoLancesSteps {
         lista.forEach(lance -> leilao.propoe(lance));
     }
 
+    @Dado("um lance invalido de {double} reais")
+    public void um_lance_de_reais(Double valor) {
+        this.lance = new Lance(new BigDecimal(valor));
+    }
+
+    @Entao("o lance nao eh aceito")
+    public void o_lance_nao_eh_aceito() {
+        Assert.assertEquals(0, leilao.getLances().size());
+    }
+
     @Entao("os lances sao aceitos")
     public void os_lances_sao_aceitos() {
         Assert.assertEquals(this.lista.size(), leilao.getLances().size());
