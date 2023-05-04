@@ -1,0 +1,32 @@
+// esta lista pode ser modificada (posso mudar elementos já existentes)
+List<String> asList = Arrays.asList("maça", "laranja");
+// mudando o elemento da posição zero
+asList.set(0, "abacaxi"); // OK
+System.out.println(asList); // [abacaxi, laranja]
+
+// esta lista não pode ser modificada
+List<String> listOf = List.of("maça", "laranja");
+listOf.set(0, "abacaxi"); // Erro: java.lang.UnsupportedOperationException
+Porém, vale lembrar de um detalhe: a lista retornada por Arrays.asList tem tamanho fixo, ou seja, eu só consigo mudar os valores das posições já existentes (como fiz acima com o método set). Mas se eu quiser adicionar ou remover elementos, dará erro:
+
+List<String> asList = Arrays.asList("maça", "laranja");
+// qualquer método que mude o tamanho da lista dá erro
+asList.add("banana"); // Erro: java.lang.UnsupportedOperationException
+asList.remove(0); // Erro: java.lang.UnsupportedOperationException
+Outra diferença é o tratamento dado para valores nulos. Arrays.asList aceita elementos nulos, enquanto List.of não:
+
+// ok, pode ter null
+List<String> asList = Arrays.asList("maça", "laranja", null);
+System.out.println(asList); // [abacaxi, laranja, null]
+
+// erro, não pode ter null
+List<String> listOf = List.of("maça", "laranja", null); // NullPointerException
+O mesmo ocorre quando vou verificar se há um elemento nulo:
+
+List<String> asList = Arrays.asList("maça", "laranja");
+// pode verificar se contém elemento nulo
+System.out.println(asList.contains(null)); // false
+
+List<String> listOf = List.of("maça", "laranja");
+// não pode verificar se contém elemento nulo
+System.out.println(listOf.contains(null)); // NullPointerException
