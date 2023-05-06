@@ -1,34 +1,41 @@
 buildscript {
     ext {
-        springBootVersion = '3.0.6'
+        springBootVersion = '2.4.0-SNAPSHOT'
     }
     repositories {
         mavenCentral()
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
     }
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
-        classpath("gradle.plugin.com.palantir.gradle.docker:gradle-docker:0.22.1")
+        classpath('gradle.plugin.com.palantir.gradle.docker:gradle-docker:0.22.1')
     }
+
 }
 
 plugins {
+    id 'org.springframework.boot' version '2.4.0'
+    id 'io.spring.dependency-management' version '1.0.10.RELEASE'
     id 'java'
-    id 'org.springframework.boot' version '3.0.6'
-    id 'io.spring.dependency-management' version '1.1.0'
     id 'com.palantir.docker' version '0.22.1'
 }
 
+group = 'matheuspieropan'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '15'
+
 bootJar {
     baseName = 'curso-spring-aws'
-    version = '1.0.0'
+    version =  '1.1.0'
 }
 
-task unpack(type: Copy){
+task unpack(type: Copy) {
     dependsOn bootJar
     from(zipTree(tasks.bootJar.outputs.files.singleFile))
     into("build/dependency")
 }
-
 docker {
     name "${project.group}/${bootJar.baseName}"
     tags "${bootJar.version}"
@@ -36,28 +43,20 @@ docker {
     buildArgs(['DEPENDENCY': "dependency"])
 }
 
-group = 'matheuspieropan'
-version = '0.0.1-SNAPSHOT'
-sourceCompatibility = '17'
-
-configurations {
-    compileOnly {
-        extendsFrom annotationProcessor
-    }
-}
 
 repositories {
     mavenCentral()
+    maven { url 'https://repo.spring.io/milestone' }
+    maven { url 'https://repo.spring.io/snapshot' }
 }
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
-    compileOnly 'org.projectlombok:lombok'
-    annotationProcessor 'org.projectlombok:lombok'
+
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
 
-tasks.named('test') {
+test {
     useJUnitPlatform()
 }
