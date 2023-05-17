@@ -23,3 +23,14 @@ Ordenação
 Ainda vamos falar sobre ordenação e páginas, mas claro que a Derived Query pode dar suporte:
 
 List<Funcionario> findByNomeOrderByNomeAsc(String nome)
+
+
+
+Agora imagina se precisa pesquisar pela descrição mas da UnidadeTrabalho. A primeira ideia seria usar o nome findByUnidadeTrabalhosDescricao(String descricao) como discutimos.
+
+No entanto temos o problema que o nome da entidade UnidadeTrabalho é composto de duas palavras. Para separar claramente o nome da entidade do atributo devemos usar o caracter _. Veja a assinatura do método então:
+
+List<Funcionario> findByUnidadeTrabalhos_Descricao(String descricao);
+
+@Query("SELECT f FROM Funcionario f JOIN f.unidadeTrabalhos u WHERE u.descricao = :descricao")
+List<Funcionario> findByUnidadeTrabalhos_Descricao(String descricao);
