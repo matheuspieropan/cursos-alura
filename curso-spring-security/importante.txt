@@ -1,0 +1,9 @@
+Baixar imagem do postgres do docker
+
+docker pull postgres
+
+Executar comando abaixo
+
+docker run --name my-postgres -e POSTGRES_PASSWORD=123 -e POSTGRES_DB=curso-security -p 5432:5432 -d postgres
+
+Sobe um container com o nome de my-postgres, cria um usuário com senha 123, um banco com nome curso-security e expõe a porta 5432 para que consiga acessar localmente!
