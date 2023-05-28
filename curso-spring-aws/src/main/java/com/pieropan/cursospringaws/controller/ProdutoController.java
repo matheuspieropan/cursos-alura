@@ -26,12 +26,14 @@ public class ProdutoController {
         return repository.findAll();
     }
 
-    @GetMapping
-    public ResponseEntity<Produto> findById(@PathVariable Long id) {
-        Optional<Produto> produto = repository.findById(id);
-        return produto.isPresent()
-                ? new ResponseEntity<>(produto.get(), HttpStatus.OK)
-                : new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    @GetMapping("/{id}")
+    public ResponseEntity<Produto> findById(@PathVariable long id) {
+        Optional<Produto> optProduct = repository.findById(id);
+        if (optProduct.isPresent()) {
+            return new ResponseEntity<>(optProduct.get(), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 
     @PostMapping
