@@ -1,22 +1,22 @@
 package com.pieropan.cursospringaws.controller;
 
+import com.pieropan.cursospringaws.enums.EventType;
 import com.pieropan.cursospringaws.model.Produto;
 import com.pieropan.cursospringaws.repository.ProdutoRepository;
+import com.pieropan.cursospringaws.service.ProdutoPublicador;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
 
 @RestController
 @RequestMapping("/produto")
 public class ProdutoController {
+
+    @Autowired
+    ProdutoPublicador produtoPublicador;
 
     @Autowired
     ProdutoRepository repository;
@@ -30,6 +30,7 @@ public class ProdutoController {
     public ResponseEntity<Produto> findById(@PathVariable long id) {
         Optional<Produto> optProduct = repository.findById(id);
         if (optProduct.isPresent()) {
+            produtoPublicador.publicarEvento(optProduct.get(), EventType.PRODUTO_GET_ID, "Samira Lira");
             return new ResponseEntity<>(optProduct.get(), HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -39,6 +40,7 @@ public class ProdutoController {
     @PostMapping
     public ResponseEntity<Produto> saveProduct(@RequestBody Produto produto) {
         Produto productCriado = repository.save(produto);
+        produtoPublicador.publicarEvento(produto, EventType.PRODUTO_CRIADO, "Matheus Pieropan");
         return new ResponseEntity<>(productCriado, HttpStatus.CREATED);
     }
 }
