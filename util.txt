@@ -1,0 +1,14 @@
+ long numero = 10916517;
+
+ NumberFormat numberFormat = NumberFormat.getNumberInstance(Locale.getDefault());
+ numberFormat.setGroupingUsed(true);
+
+ String numeroFormatado = numberFormat.format(numero);
+
+
+docker run --name my-postgres -e POSTGRES_PASSWORD=123 -e POSTGRES_DB=curso-security -p 5432:5432 -d postgres
+docker run --name mysql -e MYSQL_ROOT_PASSWORD=root -e MYSQL_DATABASE=aws_project01 -p 3306:3306 -d mysql
+docker run --rm -p 4566:4566 -p 4571:4571 localstack/localstack -e "SERVICES=sns,sqs,dynamodb,s3" 
+
+
+formata o número colocando os pontos.
